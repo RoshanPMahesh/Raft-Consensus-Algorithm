@@ -136,7 +136,6 @@ func (rf *Raft) checkUpToDate(argsLastLogTerm int, argsLastLogIndex int) bool {
 		receiveServerIndex = 0
 		receiveServerTerm = 0
 	}
-	//receiveServerIndex = receiveServerIndex + 0
 
 	if argsLastLogTerm > receiveServerTerm || (argsLastLogTerm == receiveServerTerm && argsLastLogIndex >= receiveServerIndex) {
 		return true
@@ -160,16 +159,11 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	}
 
 	if args.Term > rf.currentTerm {
-		//fmt.Println("RECEIVER: ", rf.currentTerm)
-		//fmt.Println("SENDER: ", args.Term)
 		rf.currentTerm = args.Term
-		//fmt.Println("REQUESTVOTE TERM: ", rf.currentTerm)
 		rf.votedFor = -1            // null
 		rf.serverState = "Follower" // another server has higher term, so make sure it's a follower
 		rf.numVotes = 0
 	}
-	//fmt.Println("TERM: ", args.LastLogTerm)
-	//fmt.Println("INDEX: ", args.LastLogIndex)
 
 	// i think we need to make sure that the it's the most up to date log too??
 	if (rf.votedFor == -1 || rf.votedFor == args.CandidateId) && rf.checkUpToDate(args.LastLogTerm, args.LastLogIndex) {
